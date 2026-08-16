@@ -13,11 +13,13 @@ function doPost(e){
     const data=JSON.parse((e&&e.postData&&e.postData.contents)||'{}');
     const ip=String(data.client_ip||'').trim();
     if(!ip)return json({ok:false,message:'No se pudo verificar tu conexi\u00f3n. Int\u00e9ntalo de nuevo.'});
+    const idea=String(data.idea||'').trim();
+    if(!idea)return json({ok:false,message:'No se pudo identificar la idea votada.'});
     const ipHash=hashIp(ip);
-    const rows=sheet.getLastRow()>1?sheet.getRange(2,4,sheet.getLastRow()-1,1).getValues():[];
-    const previous=rows.filter(function(row){return String(row[0])===ipHash}).length;
-    if(previous>=MAX_VOTES_PER_IP)return json({ok:false,blocked:true,message:'Ya has utilizado tus 2 votos disponibles. Gracias por participar.'});
-    sheet.appendRow([new Date(),data.idea||'',data.valor||data.rating||'',ipHash,data.country||'',data.city||'',data.nombre||'',data.email||'',data.mensaje||'']);
+    const rows=sheet.getLastRow()>1?sheet.getRange(2,2,sheet.getLastRow()-1,3).getValues():[];
+    const previous=rows.filter(function(row){return String(row[0])===idea&&String(row[2])===ipHash}).length;
+    if(previous>=MAX_VOTES_PER_IP)return json({ok:false,blocked:true,message:'Ya has utilizado tus 2 votos para esta idea. Puedes votar en las demás propuestas.'});
+    sheet.appendRow([new Date(),idea,data.valor||data.rating||'',ipHash,data.country||'',data.city||'',data.nombre||'',data.email||'',data.mensaje||'']);
     return json({ok:true,remaining:MAX_VOTES_PER_IP-previous-1});
   }catch(error){return json({ok:false,message:'No se pudo guardar el voto. Int\u00e9ntalo de nuevo.'});}
 }
