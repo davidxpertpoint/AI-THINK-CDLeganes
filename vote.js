@@ -1,5 +1,5 @@
 (function(){
-  function repair(value){for(var i=0;i<4;i++){try{var fixed=decodeURIComponent(escape(value));if(fixed===value)break;value=fixed}catch(error){break}}return value}
+  function repair(value){var map={'ƒ':131,'‚':130,'„':132,'…':133,'†':134,'‡':135,'ˆ':136,'‰':137,'Š':138,'‹':139,'Œ':140,'Ž':142,'‘':145,'’':146,'“':147,'”':148,'•':149,'–':150,'—':151,'˜':152,'™':153,'š':154,'›':155,'œ':156,'ž':158,'Ÿ':159};for(var i=0;i<6;i++){if(!/[ÃÂâƒ€]/.test(value))break;try{var bytes=[];for(var j=0;j<value.length;j++){var code=value.charCodeAt(j);bytes.push(map[value[j]]||code)}var fixed=new TextDecoder('utf-8').decode(new Uint8Array(bytes));if(fixed===value)break;value=fixed}catch(error){break}}return value}
   function repairPage(){var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);var node;while(node=walker.nextNode()){if(node.nodeValue.trim())node.nodeValue=repair(node.nodeValue)}document.querySelectorAll('[alt],[title],[placeholder]').forEach(function(el){['alt','title','placeholder'].forEach(function(attr){if(el.hasAttribute(attr))el.setAttribute(attr,repair(el.getAttribute(attr)))})})}
   function init(){
     repairPage();
