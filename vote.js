@@ -17,7 +17,7 @@
           try{var geoResponse=await fetch('https://ipapi.co/'+encodeURIComponent(data.client_ip)+'/json/');var geo=await geoResponse.json();data.country=geo.country_name||'';data.city=geo.city||''}catch(geoError){data.country='';data.city=''}
           var response=await fetch(endpoint,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});var result=await response.json();
           if(!result.ok){alert(result.message||'No se pudo registrar el voto.');return}
-          form.reset();alert('\u00a1Gracias! Tu voto se ha registrado correctamente. Te quedan '+result.remaining+' votos.')
+          form.reset();var remaining=typeof result.remaining==='number'?' Te quedan '+result.remaining+' votos.':'';alert('\u00a1Gracias! Tu voto se ha registrado correctamente.'+remaining)
         }catch(error){alert('No se pudo guardar el voto. Int\u00e9ntalo de nuevo.')}finally{if(button){button.disabled=false;button.textContent=button.dataset.originalText}}
       });
     });
