@@ -2,7 +2,7 @@ const SHEET_ID = '166XOevyJttoQlQbLqqmT3e30nk_2kCIJyxxKP6-9O0U';
 const SHEET_NAME = 'Votes';
 const MAX_VOTES_PER_IP = 2;
 
-function doGet(){return json({ok:true,service:'AI T.H.I.N.K. votes'});}
+function doGet(){return json({ok:true,service:'XpertPoint Solutions votes'});}
 
 function doPost(e){
   try{
