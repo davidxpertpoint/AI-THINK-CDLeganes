@@ -8,7 +8,8 @@ function doPost(e){
   try{
     const book=SpreadsheetApp.openById(SHEET_ID);
     const sheet=book.getSheetByName(SHEET_NAME)||book.insertSheet(SHEET_NAME);
-    if(sheet.getLastRow()===0)sheet.appendRow(['timestamp','idea','rating','ip_hash','country','city','name','email','message']);
+    const headers=['timestamp','idea','rating','ip_hash','country','city','name','email','message'];
+    if(sheet.getLastRow()===0)sheet.appendRow(headers);else sheet.getRange(1,1,1,headers.length).setValues([headers]);
     const data=JSON.parse((e&&e.postData&&e.postData.contents)||'{}');
     const ip=String(data.client_ip||'').trim();
     if(!ip)return json({ok:false,message:'No se pudo verificar tu conexi\u00f3n. Int\u00e9ntalo de nuevo.'});
