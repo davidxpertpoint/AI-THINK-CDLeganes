@@ -1,6 +1,5 @@
 (function(){
-  function repair(value){var map={'ƒ':131,'‚':130,'„':132,'…':133,'†':134,'‡':135,'ˆ':136,'‰':137,'Š':138,'‹':139,'Œ':140,'Ž':142,'‘':145,'’':146,'“':147,'”':148,'•':149,'–':150,'—':151,'˜':152,'™':153,'š':154,'›':155,'œ':156,'ž':158,'Ÿ':159};for(var i=0;i<6;i++){if(!/[ÃÂâƒ€]/.test(value))break;try{var bytes=[];for(var j=0;j<value.length;j++){var code=value.charCodeAt(j);bytes.push(map[value[j]]||code)}var fixed=new TextDecoder('utf-8').decode(new Uint8Array(bytes));if(fixed===value)break;value=fixed}catch(error){break}}return value.replace(/\u06f7/g,'·').replace(/\u0673/g,'ó').replace(/\u0669/g,'é').replace(/\u0661/g,'á').replace(/\u066d/g,'í').replace(/\u00da·/g,'·').replace(/\u00d9¡/g,'á')}
-  function repairPage(){var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);var node;while(node=walker.nextNode()){if(node.nodeValue.trim())node.nodeValue=repair(node.nodeValue)}document.querySelectorAll('[alt],[title],[placeholder]').forEach(function(el){['alt','title','placeholder'].forEach(function(attr){if(el.hasAttribute(attr))el.setAttribute(attr,repair(el.getAttribute(attr)))})})}
+  function repairPage(){var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);var node;while(node=walker.nextNode()){node.nodeValue=node.nodeValue.replace(/\u06b7/g,' \u00b7 ').replace(/\u00da\u00b7/g,' \u00b7 ')}}
   function init(){
     repairPage();
     document.querySelectorAll('form[data-vote-form]').forEach(function(form){
@@ -10,9 +9,16 @@
         event.preventDefault();
         var endpoint=window.XP_VOTE_ENDPOINT;
         var button=form.querySelector('button[type="submit"],button:not([type])');
-        if(!endpoint||endpoint.indexOf('PASTE_')===0){alert('Configura primero el endpoint de votación.');return}
-        if(button){button.disabled=true;button.dataset.originalText=button.textContent;button.textContent='Guardando voto…'}
-        try{var data=Object.fromEntries(new FormData(form).entries());data.page=location.pathname;data.submitted_at=new Date().toISOString();await fetch(endpoint,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});form.reset();alert('¡Gracias! Tu voto se ha registrado correctamente.')}catch(error){alert('No se ha podido registrar el voto. Inténtalo de nuevo.')}finally{if(button){button.disabled=false;button.textContent=button.dataset.originalText}};
+        if(!endpoint||endpoint.indexOf('PASTE_')===0){alert('Configura primero el endpoint de votaci\u00f3n.');return}
+        if(button){button.disabled=true;button.dataset.originalText=button.textContent;button.textContent='Guardando voto\u2026'}
+        try{
+          var data=Object.fromEntries(new FormData(form).entries());data.page=location.pathname;data.submitted_at=new Date().toISOString();
+          var ipResponse=await fetch('https://api64.ipify.org?format=json');var ipData=await ipResponse.json();data.client_ip=ipData.ip;
+          try{var geoResponse=await fetch('https://ipapi.co/'+encodeURIComponent(data.client_ip)+'/json/');var geo=await geoResponse.json();data.country=geo.country_name||'';data.city=geo.city||''}catch(geoError){data.country='';data.city=''}
+          var response=await fetch(endpoint,{method:'POST',mode:'cors',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(data)});var result=await response.json();
+          if(!result.ok){alert(result.message||'No se pudo registrar el voto.');return}
+          form.reset();alert('\u00a1Gracias! Tu voto se ha registrado correctamente. Te quedan '+result.remaining+' votos.')
+        }catch(error){alert('No se pudo guardar el voto. Int\u00e9ntalo de nuevo.')}finally{if(button){button.disabled=false;button.textContent=button.dataset.originalText}}
       });
     });
   }
