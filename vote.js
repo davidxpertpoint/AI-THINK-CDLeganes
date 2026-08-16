@@ -1,5 +1,8 @@
 (function(){
+  function repair(value){for(var i=0;i<4;i++){try{var fixed=decodeURIComponent(escape(value));if(fixed===value)break;value=fixed}catch(error){break}}return value}
+  function repairPage(){var walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);var node;while(node=walker.nextNode()){if(node.nodeValue.trim())node.nodeValue=repair(node.nodeValue)}document.querySelectorAll('[alt],[title],[placeholder]').forEach(function(el){['alt','title','placeholder'].forEach(function(attr){if(el.hasAttribute(attr))el.setAttribute(attr,repair(el.getAttribute(attr)))})})}
   function init(){
+    repairPage();
     document.querySelectorAll('form[data-vote-form]').forEach(function(form){
       var voteSection=form.closest('section');
       if(voteSection){var heading=voteSection.querySelector('h2'),intro=voteSection.querySelector('p'),legend=form.querySelector('legend'),submit=form.querySelector('button');if(heading)heading.textContent='\u00bfCu\u00e1nto valor le ves a esta idea?';if(intro)intro.textContent='Tu voto es lo m\u00e1s importante. Los dem\u00e1s datos son opcionales.';if(legend)legend.textContent='Valora la idea \u00b7 obligatorio';if(submit)submit.textContent='Enviar mi voto \u2192'}
