@@ -4,7 +4,7 @@
  * 2. In Apps Script, deploy this project as a Web app.
  * 3. Execute as you and allow anonymous access.
  */
-const SHEET_ID = 'PASTE_GOOGLE_SHEET_ID_HERE';
+const SHEET_ID = '166XOevyJttoQlQbLqqmT3e30nk_2kCIJyxxKP6-9O0U';
 const SHEET_NAME = 'Votes';
 
 function doGet() {
